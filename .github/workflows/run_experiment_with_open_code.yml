@@ -99,13 +99,6 @@ jobs:
           python-version: "3.11"
           enable-cache: false
 
-      - name: Install jq (static binary, user-local)
-        run: |
-          mkdir -p $HOME/bin
-          curl -L -o $HOME/bin/jq https://github.com/jqlang/jq/releases/download/jq-1.7.1/jq-linux-amd64
-          chmod +x $HOME/bin/jq
-          echo "$HOME/bin" >> $GITHUB_PATH
-
       - name: Prepare iteration dir
         run: |
           iteration_dir=".research/iteration${{ github.event.inputs.experiment_iteration }}"
@@ -113,12 +106,10 @@ jobs:
           echo "ITERATION_DIR=$iteration_dir" >> "$GITHUB_ENV"
 
       - name: Install OpenCode CLI
-        run: curl -fsSL https://opencode.ai/install | bash
-
-      - name: Clear OpenCode CLI cache
         run: |
-          echo "Clearing opencode cache to ensure fresh dependency installation..."
-          rm -rf $HOME/.cache/opencode
+          curl -fsSL https://opencode.ai/install | bash
+          cd ~/.cache/opencode
+          npm install jose
 
       - name: OpenCode Autonomous Run, Fix, and Validate Loop
         env:
