@@ -105,11 +105,14 @@ jobs:
           mkdir -p "$iteration_dir"
           echo "ITERATION_DIR=$iteration_dir" >> "$GITHUB_ENV"
 
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
       - name: Install OpenCode CLI
         run: |
           curl -fsSL https://opencode.ai/install | bash
-          cd ~/.cache/opencode
-          npm install jose
 
       - name: OpenCode Autonomous Run, Fix, and Validate Loop
         env:
