@@ -125,7 +125,7 @@ jobs:
             ]
           }
           EOF
-          $HOME/.opencode/bin/bun add --cwd "$CACHE_DIR" @ai-sdk/anthropic
+          $HOME/.opencode/bin/opencode add --cwd "$CACHE_DIR" @ai-sdk/anthropic
 
       - name: OpenCode Autonomous Run, Fix, and Validate Loop
         env:
