@@ -104,39 +104,25 @@ jobs:
           iteration_dir=".research/iteration${{ github.event.inputs.experiment_iteration }}"
           mkdir -p "$iteration_dir"
           echo "ITERATION_DIR=$iteration_dir" >> "$GITHUB_ENV"
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-
-      - name: Install OpenCode CLI
+  
+      - name: Install OpenCode and Prepare Dependencies
         run: |
           curl -fsSL https://opencode.ai/install | bash
-
-      - name: Prepare and Pre-install OpenCode Dependencies
-        run: |
-          echo "Taking control of the installation process to ensure stability..."
+          export PATH="$HOME/.opencode/bin:$PATH"
+          echo "Preparing opencode cache and pre-installing dependencies..."
           CACHE_DIR="$HOME/.cache/opencode"
-          echo "[1/3] Resetting the environment..."
           rm -rf "$CACHE_DIR"
           mkdir -p "$CACHE_DIR"
-          echo "[2/3] Creating a configuration file for bun to fix its installation bugs..."
           cat <<EOF > "$CACHE_DIR/package.json"
           {
             "name": "opencode-cache-controller",
             "trustedDependencies": [
-              "opencode-copilot-auth",
-              "@ai-sdk/provider",
-              "hono",
-              "@oslojs/crypto",
-              "@oslojs/encoding",
-              "@oslojs/asn1",
+              "opencode-copilot-auth", "@ai-sdk/provider", "hono",
+              "@oslojs/crypto", "@oslojs/encoding", "@oslojs/asn1",
               "@ai-sdk/anthropic"
             ]
           }
           EOF
-          echo "[3/3] Pre-installing all required dependencies using the fixed method..."
           bun add --cwd "$CACHE_DIR" @ai-sdk/anthropic
 
       - name: OpenCode Autonomous Run, Fix, and Validate Loop
