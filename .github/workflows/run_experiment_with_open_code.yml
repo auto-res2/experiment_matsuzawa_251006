@@ -137,7 +137,7 @@ jobs:
           }
           EOF
           echo "[3/3] Pre-installing all required dependencies using the fixed method..."
-          $HOME/.opencode/bin/bun add --cwd "$CACHE_DIR" @ai-sdk/anthropic
+          bun add --cwd "$CACHE_DIR" @ai-sdk/anthropic
 
       - name: OpenCode Autonomous Run, Fix, and Validate Loop
         env:
