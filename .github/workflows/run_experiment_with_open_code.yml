@@ -108,11 +108,13 @@ jobs:
       - name: Install OpenCode and Prepare Dependencies
         run: |
           curl -fsSL https://opencode.ai/install | bash
+
           export PATH="$HOME/.opencode/bin:$PATH"
           echo "Preparing opencode cache and pre-installing dependencies..."
           CACHE_DIR="$HOME/.cache/opencode"
           rm -rf "$CACHE_DIR"
           mkdir -p "$CACHE_DIR"
+
           cat <<EOF > "$CACHE_DIR/package.json"
           {
             "name": "opencode-cache-controller",
@@ -123,7 +125,7 @@ jobs:
             ]
           }
           EOF
-          bun add --cwd "$CACHE_DIR" @ai-sdk/anthropic
+          $HOME/.opencode/bin/bun add --cwd "$CACHE_DIR" @ai-sdk/anthropic
 
       - name: OpenCode Autonomous Run, Fix, and Validate Loop
         env:
