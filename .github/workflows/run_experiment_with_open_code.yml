@@ -1,4 +1,4 @@
-name: Run Experiment by Claude Code
+name: Run Experiment by Open Code
 
 on:
   workflow_dispatch:
@@ -114,6 +114,11 @@ jobs:
 
       - name: Install OpenCode CLI
         run: curl -fsSL https://opencode.ai/install | bash
+
+      - name: Clear OpenCode CLI cache
+        run: |
+          echo "Clearing opencode cache to ensure fresh dependency installation..."
+          rm -rf $HOME/.cache/opencode
 
       - name: OpenCode Autonomous Run, Fix, and Validate Loop
         env:
