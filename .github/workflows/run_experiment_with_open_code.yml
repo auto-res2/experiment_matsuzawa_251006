@@ -104,53 +104,23 @@ jobs:
           iteration_dir=".research/iteration${{ github.event.inputs.experiment_iteration }}"
           mkdir -p "$iteration_dir"
           echo "ITERATION_DIR=$iteration_dir" >> "$GITHUB_ENV"
-  
-      - name: Install OpenCode and Prepare Dependencies
+
+      - name: Setup Node.js Environment
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install opencode
+        shell: bash
         run: |
+          npm install -g bun
           curl -fsSL https://opencode.ai/install | bash
-
-          export PATH="$HOME/.opencode/bin:$PATH"
-          echo "Preparing opencode cache and pre-installing dependencies..."
-          CACHE_DIR="$HOME/.cache/opencode"
-          rm -rf "$CACHE_DIR"
-          mkdir -p "$CACHE_DIR"
-
-          cat <<EOF > "$CACHE_DIR/package.json"
-          {
-            "name": "opencode-cache-controller",
-            "trustedDependencies": [
-              "opencode-copilot-auth", "@ai-sdk/provider", "hono",
-              "@oslojs/crypto", "@oslojs/encoding", "@oslojs/asn1",
-              "@ai-sdk/anthropic"
-            ]
-          }
-          EOF
-          $HOME/.opencode/bin/opencode add --cwd "$CACHE_DIR" @ai-sdk/anthropic
 
       - name: OpenCode Autonomous Run, Fix, and Validate Loop
         env:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
         run: opencode run --model "${{ github.event.inputs.model_name }}" "$PROMPT"
-
-      - name: Display OpenCode Log on Failure
-        if: failure()
-        run: |
-          echo "OpenCode CLI failed. Displaying the latest log file..."
-          # ログディレクトリが存在するか確認
-          if [ -d "$HOME/.local/share/opencode/log" ]; then
-            # 最新のログファイルを見つけて内容を出力
-            LOG_FILE=$(ls -t $HOME/.local/share/opencode/log/*.log | head -n 1)
-            if [ -f "$LOG_FILE" ]; then
-              echo "--- Log file content: $LOG_FILE ---"
-              cat "$LOG_FILE"
-              echo "------------------------------------"
-            else
-              echo "Log file not found."
-            fi
-          else
-            echo "Log directory not found."
-          fi
 
       - name: Commit and push experiment results
         if: always()
